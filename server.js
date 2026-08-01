@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const port = Number(process.env.PORT || 8080);
 // On Railway, set API_URL to the public backend URL, e.g. https://<backend>.up.railway.app/api
-const apiUrl = process.env.API_URL || '/api';
+const apiUrl = process.env.API_URL || 'https://atas-app-api-production.up.railway.app/api';
 const distCandidates = [
   path.join(__dirname, 'dist'),
   path.join(__dirname, 'dist', 'atas-ui'),
