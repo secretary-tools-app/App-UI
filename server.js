@@ -5,7 +5,8 @@ const app = express();
 const port = Number(process.env.PORT || 8080);
 // On Railway, set API_URL to the public backend URL, e.g. https://<backend>.up.railway.app/api
 const apiUrl = process.env.API_URL || '/api';
-const distPath = path.join(__dirname, 'dist');
+const distPath = path.join(__dirname, 'dist', 'atas-ui');
+const indexPath = path.join(distPath, 'index.html');
 
 app.get('/runtime-config.js', (_req, res) => {
   res.type('application/javascript');
@@ -14,7 +15,7 @@ app.get('/runtime-config.js', (_req, res) => {
 
 app.use(express.static(distPath));
 app.use((_req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
+  res.sendFile(indexPath);
 });
 
 app.listen(port, () => {
