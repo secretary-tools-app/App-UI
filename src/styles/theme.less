@@ -1,0 +1,101 @@
+// ============================================================
+// Tema customizado — Atas UI
+// Paleta "ata de reunião": tinta sobre papel, com dois acentos
+// que distinguem o tipo de ata (Sacramental = madeira/pão,
+// Batismo = água).
+//
+// IMPORTANTE: o @import precisa vir ANTES das variáveis. Como o
+// less resolve variáveis de forma "lazy", a última atribuição
+// vence — se as variáveis fossem definidas antes, o default.less
+// do ng-zorro as sobrescreveria com o azul padrão (#1890ff).
+// ============================================================
+
+@import 'ng-zorro-antd/ng-zorro-antd.less';
+
+// Cor de marca / ação primária
+@primary-color: #5b21b6;
+@info-color: #2f6690;
+@success-color: #4c7a5d;
+@warning-color: #9c6b30;
+@error-color: #b3432b;
+
+@font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+@font-size-base: 15px;
+@border-radius-base: 12px;
+
+// Alvos de toque maiores (mobile-first)
+@height-base: 44px;
+@height-lg: 52px;
+@height-sm: 36px;
+
+@btn-font-weight: 600;
+
+// Abas (Ajustes) em escala do app
+@tabs-title-font-size: 14px;
+@tabs-horizontal-gutter: 16px;
+
+// ============================================================
+// Date picker (nz-date-picker) — mobile friendly
+// Vem depois do @import para vencer as regras do ng-zorro.
+// ============================================================
+
+// Campo: altura fixa de toque, padding lateral, fonte legível
+.ant-picker.ant-picker-large {
+  height: 52px;
+  padding: 0 12px;
+  align-items: center;
+}
+.ant-picker.ant-picker-large .ant-picker-input > input {
+  font-size: 16px;
+  min-height: 0;
+}
+
+// Ícones do campo maiores e com a cor da marca
+.ant-picker .ant-picker-suffix {
+  font-size: 18px;
+  color: var(--primary);
+}
+.ant-picker .ant-picker-clear {
+  font-size: 16px;
+}
+
+// Calendário: cabe num celular, células com alvo de toque maior
+.ant-picker-dropdown .ant-picker-panel-container {
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  border-radius: 16px;
+}
+.ant-picker-dropdown .ant-picker-content th {
+  height: 36px;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.ant-picker-dropdown .ant-picker-content td {
+  height: 44px;
+}
+.ant-picker-dropdown .ant-picker-cell-inner {
+  min-width: 38px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 16px;
+}
+
+// Dropdown abre centralizado no meio da tela (padrão mobile).
+// Evita o calendário ser cortado quando abre colado ao input.
+.cdk-overlay-pane:has(.ant-picker-dropdown) {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+.cdk-overlay-pane:has(.ant-picker-dropdown) > .ant-picker-wrapper {
+  margin: auto;
+}
+.cdk-overlay-pane:has(.ant-picker-dropdown) > .ant-picker-wrapper > .ant-picker-dropdown {
+  position: static !important;
+}
