@@ -1,11 +1,17 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const port = Number(process.env.PORT || 8080);
 // On Railway, set API_URL to the public backend URL, e.g. https://<backend>.up.railway.app/api
 const apiUrl = process.env.API_URL || '/api';
-const distPath = path.join(__dirname, 'dist', 'atas-ui', 'browser');
+const distCandidates = [
+  path.join(__dirname, 'dist'),
+  path.join(__dirname, 'dist', 'atas-ui'),
+  path.join(__dirname, 'dist', 'atas-ui', 'browser'),
+];
+const distPath = distCandidates.find((candidate) => fs.existsSync(path.join(candidate, 'index.html'))) || distCandidates[0];
 const indexPath = path.join(distPath, 'index.html');
 
 app.get('/runtime-config.js', (_req, res) => {
