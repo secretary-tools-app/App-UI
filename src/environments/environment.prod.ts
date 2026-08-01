@@ -10,5 +10,5 @@ const runtimeApiUrl = typeof window !== 'undefined' ? window.__APP_CONFIG__?.api
 
 export const environment = {
   production: true,
-  apiUrl: runtimeApiUrl || '/api',
+  apiUrl: runtimeApiUrl || 'https://<SEU-BACKEND-RAILWAY>.up.railway.app/api',
 };
