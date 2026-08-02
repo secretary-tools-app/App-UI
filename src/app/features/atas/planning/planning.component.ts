@@ -39,6 +39,8 @@ interface SundayData {
     hinoSacramental: string;
     hinoIntermediario: string;
     hinoEncerramento: string;
+    oracaoAbertura: string;
+    oracaoEncerramento: string;
   };
 }
 
@@ -353,6 +355,65 @@ interface MonthGroup {
       </div>
     }
 
+    <!-- ═══ ORAÇÕES ═══ -->
+    @if (activeSegment() === 'oracoes') {
+      <div class="list-view">
+        <p class="list-view__lead">
+          Orações dos últimos 3 meses e próximos 3 meses.
+        </p>
+        @if (loadingLists()) {
+          <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 8 }"></nz-skeleton>
+        } @else {
+          @for (m of oracoesData(); track m.year + '-' + m.month) {
+            <div class="month-section" [id]="'month-' + m.year + '-' + m.month" [class.month-section--current]="isCurrentMonth(m)">
+              <div class="month-section__header">
+                <span class="month-section__title">{{ m.label }}</span>
+                <span class="month-section__count">{{ m.sundays.length }} domingo{{ m.sundays.length > 1 ? 's' : '' }}</span>
+              </div>
+              @for (s of m.sundays; track s.date) {
+                <div class="list-row">
+                  <div class="list-row__day">
+                    <span class="list-row__daynum">{{ s.dayNum }}</span>
+                    <span class="list-row__weekday">{{ s.label }}</span>
+                  </div>
+                  <div class="list-row__content">
+                    @if (s.state) {
+                      @if (s.state.oracaoAbertura) {
+                        <div class="list-row__hino">
+                          <span class="hino-badge hino-badge--abertura">Abertura</span>
+                          <span class="hino-name">{{ s.state.oracaoAbertura }}</span>
+                        </div>
+                      }
+                      @if (s.state.oracaoEncerramento) {
+                        <div class="list-row__hino">
+                          <span class="hino-badge hino-badge--encerramento">Encerramento</span>
+                          <span class="hino-name">{{ s.state.oracaoEncerramento }}</span>
+                        </div>
+                      }
+                    } @else {
+                      <span class="list-row__empty">Sem dados</span>
+                    }
+                    @if (isFuture(s.date)) {
+                      <button class="list-row__edit" (click)="openSheet('oracoes', s)">
+                        <span nz-icon [nzType]="s.state?.oracaoAbertura ? 'edit' : 'plus'" nzTheme="outline"></span>
+                        {{ s.state?.oracaoAbertura ? 'Editar' : 'Adicionar' }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @if (oracoesData().length === 0) {
+            <div class="list-view__empty">
+              <span nz-icon nzType="calendar" nzTheme="outline" class="list-view__empty-icon"></span>
+              <p>Nenhuma oração encontrada nos últimos 3 meses.</p>
+            </div>
+          }
+        }
+      </div>
+    }
+
     <!-- ═══ Bottom Sheet: Discursantes ═══ -->
     @if (sheetOpen() && sheetType() === 'discursantes') {
       <app-bottom-sheet
@@ -467,12 +528,35 @@ interface MonthGroup {
       </app-bottom-sheet>
     }
 
+    <!-- ═══ Bottom Sheet: Orações ═══ -->
+    @if (sheetOpen() && sheetType() === 'oracoes') {
+      <app-bottom-sheet
+        [titulo]="editingSunday()?.state?.oracaoAbertura ? 'Editar orações' : 'Adicionar orações'"
+        [subtitulo]="editingSunday() ? (editingSunday()!.label + ' — ' + editingSunday()!.dayNum) : ''"
+        [salvando]="savingSheet()"
+        (salvar)="saveSheet()"
+        (fechar)="closeSheet()"
+      >
+        <div class="sheet__fields">
+          <div class="field">
+            <label class="field-label">Oração de abertura</label>
+            <input class="field-input" type="text" [(ngModel)]="sheetForm.oracaoAbertura" placeholder="Nome" />
+          </div>
+          <div class="field">
+            <label class="field-label">Oração de encerramento</label>
+            <input class="field-input" type="text" [(ngModel)]="sheetForm.oracaoEncerramento" placeholder="Nome" />
+          </div>
+        </div>
+      </app-bottom-sheet>
+    }
+
     <!-- ═══ Segment (fixed above bottom nav) ═══ -->
     <div class="segment-bar">
       <div class="segment">
         <button class="segment__btn" [class.segment__btn--active]="activeSegment() === 'atas'" (click)="setSegment('atas')">Atas</button>
         <button class="segment__btn" [class.segment__btn--active]="activeSegment() === 'discursantes'" (click)="setSegment('discursantes')">Discursantes</button>
         <button class="segment__btn" [class.segment__btn--active]="activeSegment() === 'hinos'" (click)="setSegment('hinos')">Hinos</button>
+        <button class="segment__btn" [class.segment__btn--active]="activeSegment() === 'oracoes'" (click)="setSegment('oracoes')">Orações</button>
         <span class="segment__indicator" [style.left]="segmentLeft()"></span>
       </div>
     </div>
@@ -548,7 +632,7 @@ interface MonthGroup {
       position: absolute;
       top: 3px;
       bottom: 3px;
-      width: calc(100% / 3 - 2px);
+      width: calc(100% / 4 - 2px);
       background: var(--paper);
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -950,13 +1034,14 @@ export class PlanningComponent implements OnInit, AfterViewInit {
   hinosIntermediario = signal<Hino[]>([]);
   hinosEncerramento = signal<Hino[]>([]);
 
-  activeSegment = signal<'atas' | 'discursantes' | 'hinos'>('atas');
+  activeSegment = signal<'atas' | 'discursantes' | 'hinos' | 'oracoes'>('atas');
   discursantesData = signal<MonthGroup[]>([]);
   hinosData = signal<MonthGroup[]>([]);
+  oracoesData = signal<MonthGroup[]>([]);
   loadingLists = signal(false);
 
   sheetOpen = signal(false);
-  sheetType = signal<'discursantes' | 'hinos'>('discursantes');
+  sheetType = signal<'discursantes' | 'hinos' | 'oracoes'>('discursantes');
   editingSunday = signal<SundayData | null>(null);
   sheetForm = {
     discursante1: '',
@@ -969,6 +1054,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
     hinoSacramental: '',
     hinoIntermediario: '',
     hinoEncerramento: '',
+    oracaoAbertura: '',
+    oracaoEncerramento: '',
   };
   savingSheet = signal(false);
 
@@ -1019,11 +1106,17 @@ export class PlanningComponent implements OnInit, AfterViewInit {
   }
 
   segmentLeft(): string {
-    const idx = this.activeSegment() === 'atas' ? 0 : this.activeSegment() === 'discursantes' ? 1 : 2;
-    return `calc(${idx} * (100% / 3) + 2px)`;
+    const map: Record<'atas' | 'discursantes' | 'hinos' | 'oracoes', number> = {
+      atas: 0,
+      discursantes: 1,
+      hinos: 2,
+      oracoes: 3,
+    };
+    const idx = map[this.activeSegment()];
+    return `calc(${idx} * (100% / 4) + 2px)`;
   }
 
-  setSegment(seg: 'atas' | 'discursantes' | 'hinos'): void {
+  setSegment(seg: 'atas' | 'discursantes' | 'hinos' | 'oracoes'): void {
     this.activeSegment.set(seg);
     if (seg !== 'atas') {
       setTimeout(() => this.scrollToCurrentMonth(), 100);
@@ -1050,7 +1143,7 @@ export class PlanningComponent implements OnInit, AfterViewInit {
     return m.year === now.getFullYear() && m.month === now.getMonth();
   }
 
-  openSheet(type: 'discursantes' | 'hinos', s: SundayData): void {
+  openSheet(type: 'discursantes' | 'hinos' | 'oracoes', s: SundayData): void {
     this.sheetType.set(type);
     this.editingSunday.set(s);
     this.sheetForm = {
@@ -1064,6 +1157,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
       hinoSacramental: s.state?.hinoSacramental ?? '',
       hinoIntermediario: s.state?.hinoIntermediario ?? '',
       hinoEncerramento: s.state?.hinoEncerramento ?? '',
+      oracaoAbertura: s.state?.oracaoAbertura ?? '',
+      oracaoEncerramento: s.state?.oracaoEncerramento ?? '',
     };
     this.sheetOpen.set(true);
   }
@@ -1133,6 +1228,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
       hinoSacramental: this.sheetForm.hinoSacramental || null,
       hinoIntermediario: this.sheetForm.hinoIntermediario || null,
       hinoEncerramento: this.sheetForm.hinoEncerramento || null,
+      oracaoAbertura: this.sheetForm.oracaoAbertura || null,
+      oracaoEncerramento: this.sheetForm.oracaoEncerramento || null,
     }).pipe(
       catchError((err) => {
         console.error('[Planning] Erro ao salvar:', err);
@@ -1244,6 +1341,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
       hinoSacramental: s.form.hinoSacramental || null,
       hinoIntermediario: s.form.hinoIntermediario || null,
       hinoEncerramento: s.form.hinoEncerramento || null,
+      oracaoAbertura: s.form.oracaoAbertura || null,
+      oracaoEncerramento: s.form.oracaoEncerramento || null,
     }).pipe(
       catchError((err) => {
         console.error('[Planning] Erro ao salvar:', err);
@@ -1290,6 +1389,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
         hinoSacramental: '',
         hinoIntermediario: '',
         hinoEncerramento: '',
+        oracaoAbertura: '',
+        oracaoEncerramento: '',
       },
     }));
 
@@ -1315,6 +1416,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
         s.form.hinoSacramental = state.hinoSacramental ?? '';
         s.form.hinoIntermediario = state.hinoIntermediario ?? '';
         s.form.hinoEncerramento = state.hinoEncerramento ?? '';
+        s.form.oracaoAbertura = state.oracaoAbertura ?? '';
+        s.form.oracaoEncerramento = state.oracaoEncerramento ?? '';
       }
     });
   }
@@ -1432,6 +1535,8 @@ export class PlanningComponent implements OnInit, AfterViewInit {
           hinoSacramental: state?.hinoSacramental ?? '',
           hinoIntermediario: state?.hinoIntermediario ?? '',
           hinoEncerramento: state?.hinoEncerramento ?? '',
+          oracaoAbertura: state?.oracaoAbertura ?? '',
+          oracaoEncerramento: state?.oracaoEncerramento ?? '',
         },
       });
     }
@@ -1442,6 +1547,7 @@ export class PlanningComponent implements OnInit, AfterViewInit {
 
     const discursantesResult: MonthGroup[] = [];
     const hinosResult: MonthGroup[] = [];
+    const oracoesResult: MonthGroup[] = [];
 
     // Collect months, then sort: future first, current middle, past last
     const allGroups: { key: string; group: MonthGroup }[] = [];
@@ -1471,10 +1577,12 @@ export class PlanningComponent implements OnInit, AfterViewInit {
       const isCurrentOrFuture = key >= currentKey;
       discursantesResult.push({ ...group, sundays: group.sundays.filter(s => isCurrentOrFuture || s.state) });
       hinosResult.push({ ...group, sundays: group.sundays.filter(s => isCurrentOrFuture || s.state) });
+      oracoesResult.push({ ...group, sundays: group.sundays.filter(s => isCurrentOrFuture || s.state) });
     }
 
     this.discursantesData.set(discursantesResult);
     this.hinosData.set(hinosResult);
+    this.oracoesData.set(oracoesResult);
   }
 
   private getSundays(year: number, month: number): Date[] {

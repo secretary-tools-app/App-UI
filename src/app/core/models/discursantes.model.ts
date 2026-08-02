@@ -15,6 +15,8 @@ export interface DiscursantesState {
   hinoSacramental?: string | null;
   hinoIntermediario?: string | null;
   hinoEncerramento?: string | null;
+  oracaoAbertura?: string | null;
+  oracaoEncerramento?: string | null;
 }
 
 export interface DiscursanteSugestao {
@@ -40,4 +42,6 @@ export interface SaveDiscursantesRequest {
   hinoSacramental?: string | null;
   hinoIntermediario?: string | null;
   hinoEncerramento?: string | null;
+  oracaoAbertura?: string | null;
+  oracaoEncerramento?: string | null;
 }
