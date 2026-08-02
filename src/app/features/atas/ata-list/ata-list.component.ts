@@ -128,6 +128,19 @@ const DIAS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
     .list--switching {
       animation: listIn 0.25s ease;
     }
+
+    @media (min-width: 768px) {
+      .list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        align-items: stretch;
+      }
+      .list > nz-skeleton,
+      .empty-state {
+        grid-column: 1 / -1;
+      }
+    }
     @keyframes listIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: none; }

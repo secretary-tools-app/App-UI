@@ -119,6 +119,15 @@ import { FabComponent } from '../../shared/components/fab/fab.component';
       padding: 0 16px;
     }
 
+    @media (min-width: 768px) {
+      .content {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 20px;
+        align-items: start;
+      }
+    }
+
     .section {
       margin-bottom: 20px;
     }

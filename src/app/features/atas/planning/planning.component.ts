@@ -653,6 +653,10 @@ interface MonthGroup {
         gap: 10px;
         align-items: start;
       }
+      .planning__lead,
+      .planning > nz-skeleton {
+        grid-column: 1 / -1;
+      }
       .sunday-card {
         margin-bottom: 0;
       }
@@ -769,6 +773,23 @@ interface MonthGroup {
     /* ── Discursantes / Hinos list tabs ── */
     .list-view {
       padding: 0 16px calc(72px + var(--safe-bottom));
+    }
+    @media (min-width: 768px) {
+      .list-view {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 20px;
+        align-items: start;
+      }
+      .list-view__lead {
+        grid-column: 1 / -1;
+      }
+      .list-view__empty {
+        grid-column: 1 / -1;
+      }
+      .month-section--current {
+        margin-left: 0;
+      }
     }
     .list-view__lead {
       color: var(--ink-soft);

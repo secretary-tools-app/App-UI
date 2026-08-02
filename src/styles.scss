@@ -59,7 +59,8 @@
 
 @media (min-width: 768px) {
   :root {
-    --frame-max: 720px;
+    // Tablets: usa a tela toda (portrait 768px + landscape ~1024px).
+    --frame-max: 1024px;
   }
 }
 

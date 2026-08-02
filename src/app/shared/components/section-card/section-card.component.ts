@@ -66,6 +66,19 @@ import { CommonModule } from '@angular/common';
         flex-direction: column;
         gap: 14px;
       }
+
+      @media (min-width: 768px) {
+        .section-card__body {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+          align-items: start;
+        }
+        // Campos não-simples (listas, autocompletes, ações) ocupam a largura toda.
+        .section-card__body > :not(.field) {
+          grid-column: 1 / -1;
+        }
+      }
     `,
   ],
 })

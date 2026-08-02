@@ -108,6 +108,11 @@ import { ActionBarService } from '../../../shared/components/action-bar/action-b
       .field + .field {
         margin-top: 10px;
       }
+      @media (min-width: 768px) {
+        .field + .field {
+          margin-top: 0;
+        }
+      }
       .batizados-list {
         display: flex;
         flex-direction: column;
