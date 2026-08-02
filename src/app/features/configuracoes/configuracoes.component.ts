@@ -1005,7 +1005,7 @@ export class ConfiguracoesComponent implements OnInit {
   sobreVisible = signal(false);
   appInfo = signal<AppInfo | null>(null);
   carregandoAppInfo = signal(false);
-  readonly versaoPadrao = 'v1.0.0';
+  readonly versaoPadrao = 'v1.0.1';
 
   instalarVisible = signal(false);
   instalarAberto = signal<string | null>(null);
