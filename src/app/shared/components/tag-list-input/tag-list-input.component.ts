@@ -33,13 +33,25 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
     </div>
 
     <div class="tag-list__entry">
-      <input
-        nz-input
-        [placeholder]="placeholder"
-        [(ngModel)]="draft"
-        [disabled]="disabled"
-        (keydown.enter)="add(); $event.preventDefault()"
-      />
+      @if (multiline) {
+        <textarea
+          nz-input
+          class="tag-list__textarea"
+          [placeholder]="placeholder"
+          [(ngModel)]="draft"
+          [disabled]="disabled"
+          [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+          (keydown.enter)="onEnter($event)"
+        ></textarea>
+      } @else {
+        <input
+          nz-input
+          [placeholder]="placeholder"
+          [(ngModel)]="draft"
+          [disabled]="disabled"
+          (keydown.enter)="add(); $event.preventDefault()"
+        />
+      }
       <button nz-button nzType="default" type="button" (click)="add()" [disabled]="disabled || !draft.trim()">
         <span nz-icon nzType="plus"></span>
       </button>
@@ -63,13 +75,24 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
         font-size: 13px;
         padding: 4px 8px;
         border-radius: 8px;
+        max-width: 100%;
+        min-width: 0;
+        height: auto;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
       }
       .tag-list__entry {
         display: flex;
         gap: 8px;
+        align-items: flex-start;
       }
       .tag-list__entry input {
         flex: 1;
+      }
+      .tag-list__textarea {
+        flex: 1;
+        resize: none;
       }
     `,
   ],
@@ -77,6 +100,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 export class TagListInputComponent implements ControlValueAccessor {
   @Input() placeholder = 'Adicionar item...';
   @Input() chipColor: string | undefined = undefined;
+  @Input() multiline = false;
 
   value: string[] = [];
   draft = '';
@@ -105,6 +129,14 @@ export class TagListInputComponent implements ControlValueAccessor {
     this.draft = '';
     this.onChange(this.value);
     this.onTouched();
+  }
+
+  onEnter(e: Event): void {
+    if (this.multiline && (e as KeyboardEvent).shiftKey) {
+      return;
+    }
+    e.preventDefault();
+    this.add();
   }
 
   remove(index: number, e?: Event): void {

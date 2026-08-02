@@ -71,7 +71,7 @@ import { ActionBarService } from '../../../shared/components/action-bar/action-b
         </app-section-card>
 
         <app-section-card index="02" title="Anúncios" accent="sacramental">
-          <app-tag-list-input formControlName="anuncios" placeholder="Novo anúncio..."></app-tag-list-input>
+          <app-tag-list-input formControlName="anuncios" placeholder="Novo anúncio..." [multiline]="true"></app-tag-list-input>
         </app-section-card>
 
         <app-section-card index="03" title="Abertura" subtitle="Recepção, música e oração inicial" accent="sacramental">

@@ -71,6 +71,12 @@ import { ChamadoItem } from '../../../core/models';
         font-size: 13px;
         padding: 4px 8px;
         border-radius: 8px;
+        max-width: 100%;
+        min-width: 0;
+        height: auto;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: anywhere;
       }
       .chamado-list__entry {
         display: flex;
